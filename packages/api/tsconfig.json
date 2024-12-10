@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": false,
+    "noImplicitReturns": false,
+    "outDir": "dist",
+    "baseUrl": "src"
+  }
+}

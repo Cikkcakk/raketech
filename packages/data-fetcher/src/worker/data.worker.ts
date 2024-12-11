@@ -4,6 +4,7 @@ import { DataService } from '../services/data.service';
 import { validate } from 'nestjs-zod';
 import { UpdateFlagDto } from '../dto/update.flag.dto';
 import { ObjectLiteral } from 'typeorm';
+import { UpdateTranslationDto } from '../dto/update.translation.dto';
 
 @Injectable()
 export class DataWorker {
@@ -20,9 +21,19 @@ export class DataWorker {
         commonName: country.name.common,
         flagSVG: country.flags.svg,
         flagUTF: country.flag
-      }, UpdateFlagDto, (zodError) => new Error(`Validation Failed ${zodError.stack}`))
+      }, UpdateFlagDto, (zodError) => new Error(`Validation failed ${zodError.stack}`))
 
-      const result = await this.appService.update(country.name.official, dto)
+      const translations = Object.keys(country.translations).map((k) => {
+        const t = country.translations[k]
+
+        return validate<UpdateTranslationDto>({
+          languageCode: k,
+          officialValue: t.official,
+          commonValue: t.common,
+        }, UpdateTranslationDto, (zodError) => new Error(`Validation failed ${zodError.stack}`))
+      })
+
+      const result = await this.appService.update(country.name.official, dto, translations)
       // console.log(`+ ${country.name.official}`, result.identifiers)
       updates.push(result.identifiers)
     }

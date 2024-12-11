@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { FlagEntity } from './flags.entity';
 import { Constants } from '../constants';
 
 @Entity('translations')
+@Index(['flagId', 'languageCode'], { unique: true })
 export class TranslationEntity {
     @PrimaryGeneratedColumn({ type: 'int' })
     id: number
@@ -16,10 +17,10 @@ export class TranslationEntity {
     @Column({ name: 'common_value', type: 'varchar', length: Constants.sql.field.length.country_name, nullable: true, default: null })
     commonValue: string | null
 
-    @Column({ type: 'int' })
+    @Column({ name: 'flag_id', type: 'int' })
     flagId: number
 
     @ManyToOne(() => FlagEntity, flag => flag.translations)
-    @JoinColumn({ name: 'flagId ' })
+    @JoinColumn({ name: 'flag_id' })
     flag: FlagEntity
 }

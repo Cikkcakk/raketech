@@ -30,3 +30,4 @@ export interface ICountry {
   flag: string
   flags: IImage
 }
+

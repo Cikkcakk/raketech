@@ -12,6 +12,7 @@ export class MicroController {
       @Payload() params: GetFlagsMessage,
       @Ctx() context: TcpContext
     ): Promise<GetFlagsReply> {
-        return this.dataService.get(params)
+        const { language, ...pagination} = params
+        return this.dataService.get(pagination, language)
     }
 }

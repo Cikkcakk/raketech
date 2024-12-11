@@ -6,10 +6,12 @@ import { IPaginatedRequest } from '../../common/interface/pagination.interface';
 @Injectable()
 export class AppService {
     constructor(@Inject('FLAG_SERVICE') private readonly client: ClientProxy) {}
-    async get(pagination: IPaginatedRequest): Promise<GetFlagsReply> {
+    async get(pagination: IPaginatedRequest, languageCode?: string): Promise<GetFlagsReply> {
         return new Promise<GetFlagsReply>((resolve, reject) => {
             const payload: GetFlagsMessage = {
-                ...pagination
+                ...pagination,
+                language: languageCode
+                
                 // TODO: ... metadata ...
             }
             const observable = this.client.send<GetFlagsReply, GetFlagsMessage>('get', payload)

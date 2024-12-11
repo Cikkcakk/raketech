@@ -3,6 +3,7 @@ import { IPaginatedRequest, IPaginatedResponse } from '../interface/pagination.i
 
 export interface GetFlagsMessage extends IPaginatedRequest {
   // TODO: other metadata
+  language?: string
 }
 
 export interface GetFlagsReply extends IPaginatedResponse<IFlag> {

@@ -17,6 +17,7 @@ export class FetchCommand extends CommandRunner {
   }
   async run(): Promise<void> {
     console.log(`Fetching data ...`)
-    await this.worker.update()
+    const updated = await this.worker.update()
+    console.log('Updated', updated)
   }
 }

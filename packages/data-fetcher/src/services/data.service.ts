@@ -22,12 +22,8 @@ export class DataService {
         return this.flagsRepository.save(newFlag)
     }
 
-    async update(officialName: string, dto: UpdateFlagDto, translations: UpdateTranslationDto[]): Promise<InsertResult> {
-        // const newFlag = this.flagsRepository.insert()
-        // const newTranslations = translations.map((t) => this.translationRepository.in)
-        // return this.flagsRepository.upsert({ ...dto, officialName, updatedAt: new Date()}, ['officialName'])
-
-        const result = await this.flagsRepository
+    async update(officialName: string, dto: UpdateFlagDto, translations: UpdateTranslationDto[]): Promise<[InsertResult,InsertResult[]]> {
+        const flagInsertResult = await this.flagsRepository
           .createQueryBuilder()
           .insert()
           .into(FlagEntity)
@@ -35,21 +31,30 @@ export class DataService {
           .orUpdate(['common_name', 'flag_svg', 'flag_utf', 'updated_at'],['official_name'])
           .execute()
 
-        const xxx = await Promise.all(translations.map((t) => {
+        const translationsInsertResult = await Promise.all(translations.map((t) => {
             return this.translationRepository
               .createQueryBuilder()
               .insert()
               .into(TranslationEntity)
-              .values({ ...t, flagId: result.identifiers[0].id})
+              .values({ ...t, flagId: flagInsertResult.identifiers[0].id})
               .orUpdate(['common_value', 'official_value'],['language_code', 'flag_id'])
               .execute()
         }))
 
-        return result
+        return [flagInsertResult, translationsInsertResult]
     }
 
-    async get(request: IPaginatedRequest): Promise<IPaginatedResponse<IFlag>> {
-        const [data, total] = await this.flagsRepository.findAndCount({ skip: request.page, take: request.pageSize, relations: { translations: true }})
+    async get(request: IPaginatedRequest, languageCode?: string): Promise<IPaginatedResponse<IFlag>> {
+        const [data, total] = await this.flagsRepository.findAndCount({
+            skip: request.page,
+            take: request.pageSize,
+            relations: { translations: true },
+            where: {
+                translations: {
+                    languageCode
+                }
+            }
+        })
         return {
             ...request,
             total: total,

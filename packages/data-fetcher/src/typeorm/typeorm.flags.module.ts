@@ -18,7 +18,7 @@ export const TypeOrmFlagsModule = TypeOrmModule.forRootAsync({
             entities: [FlagEntity, TranslationEntity],
             migrationsRun: true,
             synchronize: true,
-            logging: true,
+            // logging: true,
             autoLoadEntities: true
         }
     },
